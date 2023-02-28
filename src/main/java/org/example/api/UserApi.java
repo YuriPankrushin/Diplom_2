@@ -51,12 +51,17 @@ public class UserApi extends BaseApi {
     }
 
     //Удаление пользователя
-    public Response userDelete(User user, String token) {
-        return given(requestSpecification)
+    public void userDelete(String token) {
+        given(requestSpecification)
                 .header("Content-type", "application/json")
-                .header("Authorization", "Bearer "+ token)
-                .body(user)
+                .header("Authorization", "Bearer " + token)
                 .when()
                 .delete(DELETE);
+    }
+
+    //Записать AccessToken в строковую переменную (jwt токен начинается с 7 индекса)
+    public String getUserAccessToken(Response response) {
+        String bearerToken = response.then().extract().path("accessToken");
+        return bearerToken.substring(7);
     }
 }
