@@ -10,6 +10,8 @@ public class Order {
         this.ingredients = ingredients;
     }
 
+    public Order() {}
+
     public List<String> getIngredients() {
         return ingredients;
     }
