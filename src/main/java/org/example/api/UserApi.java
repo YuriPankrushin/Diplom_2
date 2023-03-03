@@ -31,15 +31,6 @@ public class UserApi extends BaseApi {
                 .post(LOGIN);
     }
 
-    //Получение информации о пользователе
-    public Response getUserData(User user, String token) {
-        return given(requestSpecification)
-                .header("Content-type", "application/json")
-                .header("Authorization", "Bearer "+ token)
-                .when()
-                .get(USER_DATA);
-    }
-
     //Обновление информации о пользователе
     public Response patchUserData(User user, String token) {
         return given(requestSpecification)

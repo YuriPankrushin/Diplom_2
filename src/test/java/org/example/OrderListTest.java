@@ -73,7 +73,7 @@ public class OrderListTest extends BaseTest {
     @Description("Проверить, что невозможно вернуть список заказов неавторизованного пользователя")
     public void checkThatItsImpossibleToReceiveOrdersOfUnauthorizedUser() {
         //Создать заказ неавторизованным пользователем
-        Response orderResponse1 = orderApi.orderCreateUnauthorizedUser(order1);
+        orderApi.orderCreateUnauthorizedUser(order1);
         //Получить заказ пользователя
         Response ordersResponse = orderApi.getUserOrder("");
         //Проверить, что вернулся правильный ответ и статус код
