@@ -56,4 +56,8 @@ public class OrderApi extends BaseApi {
                 .get(GET_ALL_INGREDIENTS);
         return response.then().extract().path(String.format("data.price[%s]", ingredientIndex));
     }
+
+    public String getOrderId(Response orderResponse) {
+        return orderResponse.then().extract().path("order._id");
+    }
 }
