@@ -15,7 +15,6 @@ public class UserApi extends BaseApi {
     //Создание пользователя
     public Response userRegister(User user) {
         return given(requestSpecification)
-                .header("Content-type", "application/json")
                 .body(user)
                 .when()
                 .post(REGISTER);
@@ -24,7 +23,6 @@ public class UserApi extends BaseApi {
     //Авторизация и регистрация
     public Response userLogin(User user, String token) {
         return given(requestSpecification)
-                .header("Content-type", "application/json")
                 .header("Authorization", "Bearer "+ token)
                 .body(user)
                 .when()
@@ -34,7 +32,6 @@ public class UserApi extends BaseApi {
     //Обновление информации о пользователе
     public Response patchUserData(User user, String token) {
         return given(requestSpecification)
-                .header("Content-type", "application/json")
                 .header("Authorization", "Bearer "+ token)
                 .body(user)
                 .when()
@@ -44,7 +41,6 @@ public class UserApi extends BaseApi {
     //Удаление пользователя
     public void userDelete(String token) {
         given(requestSpecification)
-                .header("Content-type", "application/json")
                 .header("Authorization", "Bearer " + token)
                 .when()
                 .delete(DELETE);

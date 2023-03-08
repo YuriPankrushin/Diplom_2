@@ -16,7 +16,6 @@ public class OrderApi extends BaseApi {
     //Создание заказа без авторизации
     public Response orderCreateUnauthorizedUser(Order order) {
         return given(requestSpecification)
-                .header("Content-type", "application/json")
                 .body(order)
                 .when()
                 .post(CREATE);
@@ -25,7 +24,6 @@ public class OrderApi extends BaseApi {
     //Создание заказа с авторизацией
     public Response orderCreateAuthorizedUser(Order order, String token) {
         return given(requestSpecification)
-                .header("Content-type", "application/json")
                 .header("Authorization", "Bearer "+ token)
                 .body(order)
                 .when()
@@ -35,7 +33,6 @@ public class OrderApi extends BaseApi {
     //Получить заказы конкретного пользователя
     public Response getUserOrder(String token) {
         return given(requestSpecification)
-                .header("Content-type", "application/json")
                 .header("Authorization", "Bearer "+ token)
                 .when()
                 .get(GET_USER_ORDER);
@@ -43,7 +40,6 @@ public class OrderApi extends BaseApi {
 
     public List<String> getAvailableIngredients () {
         Response response = given(requestSpecification)
-                .header("Content-type", "application/json")
                 .when()
                 .get(GET_ALL_INGREDIENTS);
         return response.then().extract().path("data._id");
@@ -51,7 +47,6 @@ public class OrderApi extends BaseApi {
 
     public int getPriceOfIngredient(int ingredientIndex){
         Response response = given(requestSpecification)
-                .header("Content-type", "application/json")
                 .when()
                 .get(GET_ALL_INGREDIENTS);
         return response.then().extract().path(String.format("data.price[%s]", ingredientIndex));
