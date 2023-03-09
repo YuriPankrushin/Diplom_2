@@ -7,6 +7,8 @@ import org.example.model.User;
 import org.junit.AfterClass;
 import org.junit.Test;
 
+import java.util.Random;
+
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 import static org.hamcrest.Matchers.equalTo;
@@ -14,9 +16,10 @@ import static org.hamcrest.Matchers.equalTo;
 public class UserChangeDataTest extends BaseTest {
     /** Тестовые данные */
     //Данные пользователя
-    static User userAuthorized = new User("authorized@mail.ru", "password", "джо");
-    static User userAuthorizedUpdatedData = new User("updated@mail.ru", null, "ДЖО");
-    static User userUnauthorized = new User("unauthorized@mail.ru", "password", "джек");
+    static Random random = new Random();
+    static User userAuthorized = new User("box" + random.nextInt(10000000) + "@yandex.ru", "password", "user" + random.nextInt(10000000));
+    static User userAuthorizedUpdatedData = new User("box" + random.nextInt(10000000) + "@yandex.ru", null, "user" + random.nextInt(10000000));
+    static User userUnauthorized = new User("box" + random.nextInt(10000000) + "@yandex.ru", "password", "user" + random.nextInt(10000000));
 
 
     //Создание пользователя вне тестового класса, для возможности извлечения из него accessToken,

@@ -9,6 +9,7 @@ import org.junit.AfterClass;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Random;
 
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
@@ -20,11 +21,12 @@ public class OrderCreateTest extends BaseTest {
 
     /** Тестовые данные */
     //Данные пользователя
-    static User userJack = new User("jack@mail.ru", "password", "Джек");
+    static Random random = new Random();
+    static User user = new User("box" + random.nextInt(10000000) + "@yandex.ru", "password", "user" + random.nextInt(10000000));
 
     //Создание пользователя вне тестового класса, для возможности извлечения из него accessToken,
     //для последующего использования в тестах и удаления пользователя
-    static Response jackData = userApi.userRegister(userJack);
+    static Response userData = userApi.userRegister(user);
 
     //Данные заказов
     static Order order = new Order(List.of(orderApi.getAvailableIngredients().get(0), orderApi.getAvailableIngredients().get(4),
@@ -37,7 +39,7 @@ public class OrderCreateTest extends BaseTest {
     public static void testDataClear(){
         /** Удаление тестовых данных */
         //Удаление пользователя
-        userApi.userDelete(userApi.getUserAccessToken(jackData));
+        userApi.userDelete(userApi.getUserAccessToken(userData));
     }
 
     @Test
@@ -45,7 +47,7 @@ public class OrderCreateTest extends BaseTest {
     @Description("Проверить, что авторизованный пользователь может успешно создать заказ из существующих ингредиентов")
     public void checkThatAuthorizedUserCouldCreateOrder() {
         //Создать заказ
-        Response orderResponse = orderApi.orderCreateAuthorizedUser(order, userApi.getUserAccessToken(jackData));
+        Response orderResponse = orderApi.orderCreateAuthorizedUser(order, userApi.getUserAccessToken(userData));
         //Проверить, что вернулся правильный ответ и статус код
         orderResponse.then().assertThat()
                 .body("success", equalTo(true))
@@ -55,8 +57,8 @@ public class OrderCreateTest extends BaseTest {
                 .body("order.ingredients[2]._id", equalTo(orderApi.getAvailableIngredients().get(7)))
                 .body("order.ingredients[3]._id", equalTo(orderApi.getAvailableIngredients().get(10)))
                 .body("order._id", notNullValue())
-                .body("order.owner.name", equalTo(userJack.getName()))
-                .body("order.owner.email", equalTo(userJack.getEmail()))
+                .body("order.owner.name", equalTo(user.getName()))
+                .body("order.owner.email", equalTo(user.getEmail()))
                 .body("order.status", equalTo("done"))
                 .body("order.number", notNullValue())
                 .body("order.price", equalTo(orderApi.getPriceOfIngredient(0) +

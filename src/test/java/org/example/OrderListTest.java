@@ -9,6 +9,7 @@ import org.junit.AfterClass;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Random;
 
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
@@ -19,11 +20,12 @@ public class OrderListTest extends BaseTest {
 
     /** Тестовые данные */
     //Данные пользователя
-    static User userJohn = new User("john@mail.ru", "password", "Джон");
+    static Random random = new Random();
+    static User user = new User("box" + random.nextInt(10000000) + "@yandex.ru", "password", "user" + random.nextInt(10000000));
 
     //Создание пользователя вне тестового класса, для возможности извлечения из него accessToken,
     //для последующего использования в тестах и удаления пользователя
-    static Response johnData = userApi.userRegister(userJohn);
+    static Response userData = userApi.userRegister(user);
 
     //Данные заказов
     static Order order1 = new Order(List.of(orderApi.getAvailableIngredients().get(0), orderApi.getAvailableIngredients().get(4),
@@ -36,7 +38,7 @@ public class OrderListTest extends BaseTest {
     public static void testDataClear(){
         /** Удаление тестовых данных */
         //Удаление пользователя
-        userApi.userDelete(userApi.getUserAccessToken(johnData));
+        userApi.userDelete(userApi.getUserAccessToken(userData));
     }
 
     @Test
@@ -44,11 +46,11 @@ public class OrderListTest extends BaseTest {
     @Description("Проверить, что возможно вернуть список заказов авторизованного пользователя")
     public void checkThatItsPossibleToReceiveOrdersOfAuthorizedUser() {
         //Создать три заказа пользователем Джон
-        Response orderResponse1 = orderApi.orderCreateAuthorizedUser(order1, userApi.getUserAccessToken(johnData));
-        Response orderResponse2 = orderApi.orderCreateAuthorizedUser(order2, userApi.getUserAccessToken(johnData));
-        Response orderResponse3 = orderApi.orderCreateAuthorizedUser(order3, userApi.getUserAccessToken(johnData));
+        Response orderResponse1 = orderApi.orderCreateAuthorizedUser(order1, userApi.getUserAccessToken(userData));
+        Response orderResponse2 = orderApi.orderCreateAuthorizedUser(order2, userApi.getUserAccessToken(userData));
+        Response orderResponse3 = orderApi.orderCreateAuthorizedUser(order3, userApi.getUserAccessToken(userData));
         //Получить заказы пользователя
-        Response ordersResponse = orderApi.getUserOrder(userApi.getUserAccessToken(johnData));
+        Response ordersResponse = orderApi.getUserOrder(userApi.getUserAccessToken(userData));
         //Проверить, что вернулся правильный ответ и статус код
         ordersResponse.then().assertThat()
                 .body("success", equalTo(true))

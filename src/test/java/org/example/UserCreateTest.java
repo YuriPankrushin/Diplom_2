@@ -7,6 +7,8 @@ import org.example.model.User;
 import org.junit.AfterClass;
 import org.junit.Test;
 
+import java.util.Random;
+
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.Matchers.equalTo;
@@ -16,18 +18,25 @@ public class UserCreateTest extends BaseTest {
 
     /** Тестовые данные */
     //Данные пользователя
-    static User userBen = new User("ben@mail.ru", "password", "Бен");
-    static User userJoe = new User("joe@mail.ru", "password");
+    static Random random = new Random();
+    static User userSuccess = new User("box" + random.nextInt(10000000) + "@yandex.ru", "password", "user" + random.nextInt(10000000));
+    static User userFail = new User("box" + random.nextInt(10000000) + "@yandex.ru", "password");
 
     //Создание пользователя вне тестового класса, для возможности извлечения из него accessToken,
     //для последующего удаления пользователя
-    static Response benData = userApi.userRegister(userBen);
+    static Response userSuccessData = userApi.userRegister(userSuccess);
 
     @AfterClass
     public static void testDataClear(){
         /** Удаление тестовых данных */
         //Удаление пользователя
-        userApi.userDelete(userApi.getUserAccessToken(benData));
+        userApi.userDelete(userApi.getUserAccessToken(userSuccessData));
+        try {
+            userApi.userDelete(userApi.getUserAccessToken(userApi.userRegister(userFail)));
+        }
+        catch (NullPointerException e) {
+            System.out.println("Корректное поведение: пользователь не был создан, удалять нечего.");
+        }
     }
 
     @Test
@@ -35,11 +44,11 @@ public class UserCreateTest extends BaseTest {
     @Description("Успешно создать пользователя с указанием email, пароля и имени")
     public void checkThatUserCouldBeRegistered() {
         //Проверить, что вернулся правильный ответ и статус код
-        benData.then().assertThat().body("success", equalTo(true))
+        userSuccessData.then().assertThat().body("success", equalTo(true))
                 .body("$", hasKey("accessToken"))
                 .body("$", hasKey("refreshToken"))
-                .body("user.email", equalTo(userBen.getEmail()))
-                .body("user.name", equalTo(userBen.getName()))
+                .body("user.email", equalTo(userSuccess.getEmail()))
+                .body("user.name", equalTo(userSuccess.getName()))
                 .statusCode(SC_OK);
     }
 
@@ -48,7 +57,7 @@ public class UserCreateTest extends BaseTest {
     @Description("Проверить, что невозможно создать пользователя с email, паролем и именем имеющегося пользователя")
     public void checkThatUserCouldNotBeRegisteredWithExistingUserData() {
         //Создать нового пользователя с данными существующего
-        Response newUserWithBenData = userApi.userRegister(userBen);
+        Response newUserWithBenData = userApi.userRegister(userSuccess);
         //Проверить, что вернулся правильный ответ и статус код
         newUserWithBenData.then().assertThat().body("success", equalTo(false))
                 .body("message", equalTo("User already exists"))
@@ -60,7 +69,7 @@ public class UserCreateTest extends BaseTest {
     @Description("Проверить, что невозможно создать пользователя без указания имени")
     public void checkThatUserCouldNotBeRegisteredWithoutName() {
         //Создать нового пользователя с данными существующего
-        Response joeData = userApi.userRegister(userJoe);
+        Response joeData = userApi.userRegister(userFail);
         //Проверить, что вернулся правильный ответ и статус код
         joeData.then().assertThat().body("success", equalTo(false))
                 .body("message", equalTo("Email, password and name are required fields"))
